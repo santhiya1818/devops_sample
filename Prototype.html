@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prototype — Creational Pattern</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050816;
+  --bg2:#0b1228;
+  --panel:rgba(18,26,50,.72);
+  --panel2:rgba(30,41,70,.82);
+
+  --line:rgba(120,170,255,.35);
+  --line-soft:rgba(120,170,255,.12);
+
+  --ink:#f8fbff;
+  --ink-dim:#b7c8e8;
+
+  --accent:#7c5cff;
+  --accent2:#2ee6d6;
+  --accent3:#ff7b72;
+
+  --mono:'IBM Plex Mono', monospace;
+  --sans:'IBM Plex Sans', sans-serif;
+  --head:'Space Grotesk', sans-serif;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background:
+      radial-gradient(circle at 15% 15%, rgba(124,92,255,.22), transparent 35%),
+      radial-gradient(circle at 85% 10%, rgba(46,230,214,.18), transparent 30%),
+      radial-gradient(circle at 50% 100%, rgba(255,123,114,.12), transparent 45%),
+      linear-gradient(135deg,#050816,#0b1228 60%,#08111f);
+  min-height:100vh;
+  animation:fadeIn .6s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+/* Header */
+
+header.title-block{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:15px;
+
+  padding:22px 28px;
+
+  backdrop-filter:blur(18px);
+  background:rgba(7,12,28,.75);
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
+}
+
+h1{
+  font-family:var(--head);
+  font-size:2rem;
+  letter-spacing:.06em;
+}
+
+.meta{
+  font-family:var(--mono);
+  color:var(--ink-dim);
+  margin-top:5px;
+}
+
+.stamp{
+  padding:10px 18px;
+  border-radius:50px;
+  font-family:var(--mono);
+  font-weight:700;
+  background:linear-gradient(135deg,var(--accent),#9f8dff);
+  color:white;
+  transform:rotate(-4deg);
+  box-shadow:0 0 25px rgba(124,92,255,.5);
+}
+
+/* Layout */
+
+.layout{
+  display:flex;
+  max-width:1400px;
+  margin:auto;
+}
+
+nav.sheets{
+  width:240px;
+  padding:18px;
+  position:sticky;
+  top:95px;
+  height:calc(100vh - 100px);
+
+  overflow:auto;
+
+  background:rgba(9,16,34,.45);
+  backdrop-filter:blur(15px);
+
+  border-right:1px solid rgba(255,255,255,.05);
+}
+
+nav.sheets::-webkit-scrollbar{
+  width:6px;
+}
+
+nav.sheets::-webkit-scrollbar-thumb{
+  background:var(--accent);
+  border-radius:20px;
+}
+
+/* Sidebar buttons */
+
+nav button{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:12px 14px;
+  margin-bottom:8px;
+
+  border:none;
+  border-radius:12px;
+
+  background:transparent;
+
+  color:var(--ink-dim);
+  cursor:pointer;
+
+  transition:.3s;
+}
+
+nav button:hover{
+  background:rgba(124,92,255,.12);
+  color:white;
+  transform:translateX(5px);
+}
+
+nav button.active{
+  background:linear-gradient(90deg,var(--accent),#6d4dff);
+  color:white;
+  box-shadow:0 0 18px rgba(124,92,255,.35);
+}
+
+nav button .n{
+  font-family:var(--mono);
+  font-size:.75rem;
+}
+
+.dot{
+  margin-left:auto;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+}
+
+.dot.done{
+  background:var(--accent2);
+  box-shadow:0 0 10px var(--accent2);
+}
+
+/* Main */
+
+main{
+  flex:1;
+  padding:35px;
+}
+
+.sheet{
+  display:none;
+}
+
+.sheet.active{
+  display:block;
+  animation:slideUp .4s ease;
+}
+
+@keyframes slideUp{
+  from{
+    opacity:0;
+    transform:translateY(12px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.sheet h2{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-family:var(--head);
+  font-size:1.8rem;
+  margin-bottom:18px;
+}
+
+.idx{
+  color:var(--accent2);
+  font-family:var(--mono);
+}
+
+.sicon{
+  color:var(--accent2);
+}
+
+/* Text */
+
+p{
+  line-height:1.8;
+  max-width:78ch;
+  margin:15px 0;
+}
+
+.dim{
+  color:var(--ink-dim);
+}
+
+/* Premium Cards */
+
+.golden,
+.demo,
+.analogy,
+.diagram-desc,
+.role-card,
+.flip-face,
+.proto-card,
+.verdict,
+details.dive{
+  background:var(--panel);
+  backdrop-filter:blur(14px);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  border-radius:18px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+
+  transition:.3s;
+}
+
+.golden:hover,
+.demo:hover,
+.analogy:hover,
+.role-card:hover,
+.proto-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 15px 35px rgba(124,92,255,.25);
+}
+
+.golden{
+  padding:22px;
+  border-left:4px solid var(--accent2);
+}
+
+.demo,
+.analogy,
+.diagram-desc{
+  padding:18px;
+  margin:18px 0;
+}
+
+/* Lists */
+
+ul.check{
+  list-style:none;
+  max-width:76ch;
+}
+
+ul.check li{
+  padding:14px 0;
+  border-bottom:1px solid var(--line-soft);
+  position:relative;
+  padding-left:30px;
+}
+
+ul.check li::before{
+  content:"✔";
+  position:absolute;
+  left:0;
+  color:var(--accent2);
+}
+
+/* Tables */
+
+table{
+  width:100%;
+  max-width:82ch;
+  border-collapse:collapse;
+  margin:20px 0;
+
+  overflow:hidden;
+  border-radius:16px;
+}
+
+th{
+  background:linear-gradient(90deg,var(--accent),#6b55ff);
+  color:white;
+  padding:14px;
+}
+
+td{
+  background:rgba(255,255,255,.03);
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+tr:hover td{
+  background:rgba(124,92,255,.08);
+}
+
+/* Code */
+
+pre{
+  background:#03060f;
+  color:#d7e8ff;
+
+  border:1px solid rgba(124,92,255,.3);
+  border-radius:18px;
+
+  padding:20px;
+  overflow:auto;
+
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+}
+
+code{
+  font-family:var(--mono);
+}
+
+/* Tabs */
+
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+
+.tabs button{
+  border:none;
+  border-radius:12px;
+  padding:10px 16px;
+  font-family:var(--mono);
+
+  background:rgba(255,255,255,.06);
+  color:var(--ink-dim);
+
+  cursor:pointer;
+  transition:.25s;
+}
+
+.tabs button:hover{
+  background:rgba(124,92,255,.2);
+  color:white;
+}
+
+.tabs button.active{
+  background:var(--accent);
+  color:white;
+  box-shadow:0 0 15px rgba(124,92,255,.4);
+}
+
+/* Buttons */
+
+button.act{
+  background:linear-gradient(135deg,var(--accent),#5b8cff);
+  color:white;
+  border:none;
+  border-radius:12px;
+  padding:11px 18px;
+
+  font-family:var(--mono);
+  font-weight:700;
+
+  cursor:pointer;
+  transition:.25s;
+}
+
+button.act:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 22px rgba(124,92,255,.45);
+}
+
+button.ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.15);
+  color:var(--ink-dim);
+
+  border-radius:12px;
+  padding:10px 16px;
+
+  cursor:pointer;
+  transition:.25s;
+}
+
+button.ghost:hover{
+  border-color:var(--accent2);
+  color:white;
+}
+
+/* Playground */
+
+.playground{
+  max-width:1400px;
+  margin:auto;
+  padding:30px;
+}
+
+.playground-inner{
+  background:rgba(15,22,45,.55);
+  backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  border-radius:24px;
+
+  padding:26px;
+
+  box-shadow:0 20px 45px rgba(0,0,0,.35);
+}
+
+.pg-head{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.pg-head b{
+  font-family:var(--head);
+  font-size:1.25rem;
+}
+
+.pg-score{
+  color:var(--accent2);
+  font-family:var(--mono);
+}
+
+.critter{
+  width:48px;
+  height:48px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.critter:hover{
+  transform:scale(1.18) rotate(6deg);
+}
+
+/* Diagram */
+
+.node rect{
+  fill:rgba(20,30,55,.95);
+  stroke:var(--line);
+  rx:12;
+  transition:.25s;
+}
+
+.node.sel rect,
+.node:hover rect{
+  fill:rgba(124,92,255,.25);
+  stroke:var(--accent2);
+  filter:drop-shadow(0 0 10px rgba(46,230,214,.35));
+}
+
+.node text{
+  fill:white;
+  font-family:var(--mono);
+}
+
+/* Role cards */
+
+.role-card{
+  width:180px;
+  padding:18px;
+  cursor:pointer;
+}
+
+.role-card.sel{
+  background:rgba(124,92,255,.22);
+  border-color:var(--accent2);
+}
+
+/* Flip cards */
+
+.flip-card{
+  width:190px;
+  height:115px;
+  perspective:900px;
+}
+
+.flip-inner{
+  width:100%;
+  height:100%;
+  position:relative;
+  transition:transform .6s;
+  transform-style:preserve-3d;
+}
+
+.flip-card.flipped .flip-inner{
+  transform:rotateY(180deg);
+}
+
+.flip-face{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+
+  padding:15px;
+
+  backface-visibility:hidden;
+}
+
+.flip-back{
+  transform:rotateY(180deg);
+  border-color:var(--accent2);
+}
+
+/* Details */
+
+details{
+  margin:18px 0;
+}
+
+details summary{
+  cursor:pointer;
+  color:var(--accent2);
+  font-family:var(--mono);
+  padding:14px;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+  .layout{
+    flex-direction:column;
+  }
+
+  nav.sheets{
+    width:100%;
+    position:static;
+    height:auto;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+
+  nav button{
+    width:auto;
+  }
+
+  main{
+    padding:20px;
+  }
+
+  .playground{
+    padding:18px;
+  }
+
+}
+</style>
+</head>
+<body>
+<header class="title-block">
+  <div>
+    <h1>PROTOTYPE</h1>
+    <div class="meta">GoF Creational Pattern </div>
+  </div>
+  <div class="stamp">CLONE, DON'T CONSTRUCT</div>
+</header>
+
+<div class="playground">
+  <div class="playground-inner">
+    <div class="pg-head"><b>🎮 Clone Factory — the pattern in action</b><span class="pg-score" id="pgScore">0 clones spawned</span></div>
+    <p class="pg-hint" style="margin-top:0">Click the orange master critter to <code>clone()</code> it. Click any spawned clone to mutate its color — the master never changes.</p>
+    <div class="pg-grid" id="pgGrid"></div>
+    <div class="pg-foot">
+      <button class="act" onclick="pgSpawn()">clone() the master →</button>
+      <button class="ghost" onclick="pgReset()">reset factory</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sheets" id="nav"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const sections = [
+ {id:"intent", title:"Intent", body:`
+  <div class="golden"><b>Golden summary:</b> Prototype lets you create new objects by <b>copying an existing, fully-configured instance</b> (the prototype) instead of instantiating a class directly with <code>new</code>. The class of the object being created is decided at runtime by which prototype you hand it, not hard-coded at compile time.</div>
+  <div class="analogy"><span class="lbl">ANALOGY</span>Think of a rubber stamp or a photocopier. You don't hand-draw the company logo every time — you stamp a copy of a master, then maybe fill in a date by hand. The master (prototype) stays untouched; every use produces an independent copy.</div>
+  <p class="dim">Memory trick: <b>P</b>rototype = <b>P</b>hotocopy. If the word "clone" would naturally describe what's happening in your design, you're looking at this pattern.</p>
+  <div class="demo">
+   <b style="font-family:var(--head)">Try it — same object, two ways to get it</b>
+   <div class="tabs" id="intentTabs"></div>
+   <div id="intentPanes"></div>
+  </div>`},
+
+ {id:"aka", title:"Also Known As", body:`
+  <p>GoF lists no alias for this pattern in the original catalog — it's simply called <b>Prototype</b>. In everyday conversation and in language docs you'll also hear it called:</p>
+  <ul class="check"><li><b>Clone</b> pattern — most common informal name, after the operation it defines.</li>
+  <li><b>Copy constructor pattern</b> — in C++-flavoured discussions, since a copy constructor is a common implementation route.</li></ul>`},
+
+ {id:"motivation", title:"Motivation", body:`
+  <p>GoF's own example: a graphics editor lets users drop pre-drawn shapes (musical notes on a staff) onto a canvas. A naive design gives the editor a <code>Graphic</code> factory hierarchy that must know about every concrete note shape — <code>WholeNote</code>, <code>HalfNote</code> — and grow a parallel class for each one.</p>
+  <p>That's brittle: every new shape means a new factory subclass too. Instead, each shape supplies its own <code>clone()</code>. The editor keeps a palette of <b>prototype instances</b> — one already-configured note of each kind — and when the user clicks "add whole note," the editor just clones the matching prototype and drops the copy on the canvas.</p>
+  <div class="analogy"><span class="lbl">WHY IT WORKS</span>The editor never names a concrete class. It only ever says "clone <i>that</i> one" — so adding a new shape means registering one more prototype instance, not touching the editor's code at all.</div>
+  <div class="demo">
+   <b style="font-family:var(--head)">Try it — adding a new note shape</b>
+   <p class="dim" style="margin:6px 0 0">Pick an approach, then click the button to add a "TripletNote" and see what actually has to change.</p>
+   <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+     <button class="act" onclick="addShape(false)">Without Prototype</button>
+     <button class="act" onclick="addShape(true)" style="background:var(--accent2)">With Prototype</button>
+     <button class="ghost" onclick="resetShape()">reset</button>
+   </div>
+   <pre id="shapeOut" style="margin-top:12px; min-height:2.4em"><code>// click a button above</code></pre>
+  </div>`},
+
+ {id:"applicability", title:"Applicability", body:`
+  <p>GoF says: use Prototype when a system should be independent of how its products are created, composed and represented, <i>and</i> one of these holds:</p>
+  <ul class="check">
+   <li>Classes to instantiate are specified at <span class="term" title="Decided while the program is running, not when it's written">run time</span> — e.g. by dynamic loading.</li>
+   <li>You want to avoid building a factory-class <span class="term" title="A tree of related classes, like a family tree">hierarchy</span> that parallels the class hierarchy of products.</li>
+   <li>Instances of a class have only a <b>few distinct combinations of state</b> — it's more convenient to clone a matching prototype than to instantiate manually each time.</li>
+   <li>Creating an instance is <b>expensive</b> (network call, disk read, heavy computation) compared to copying an already-built one.</li>
+  </ul>
+  <details class="dive"><summary>🎓 Prefer plain English? Click here</summary>
+  <p style="margin-top:0">In short: reach for Prototype whenever building something from scratch is <b>slow, complicated, or decided late</b> — and copying a ready-made example is faster and simpler than building fresh every time.</p></details>
+  <div class="demo" style="border-color:var(--accent2)">
+   <b style="font-family:var(--head)">Self-check</b>
+   <div class="quiz" id="quiz"></div>
+   <div class="verdict" id="verdict" style="display:none"></div>
+  </div>`},
+
+ {id:"structure", title:"Structure", body:`
+  <p>Click a block in the diagram to read what it's responsible for.</p>
+  <div class="diagram">
+   <svg width="360" height="230" viewBox="0 0 360 230">
+    <g class="node" data-k="prototype">
+      <rect x="90" y="10" width="180" height="46" rx="4"/>
+      <text x="180" y="30" text-anchor="middle">«interface»</text>
+      <text x="180" y="46" text-anchor="middle">Prototype</text>
+    </g>
+    <line x1="180" y1="56" x2="180" y2="90" stroke="var(--line)" stroke-dasharray="3 3"/>
+    <g class="node" data-k="concrete1">
+      <rect x="20" y="90" width="150" height="46" rx="4"/>
+      <text x="95" y="110" text-anchor="middle">ConcretePrototype1</text>
+      <text x="95" y="126" text-anchor="middle">clone()</text>
+    </g>
+    <g class="node" data-k="concrete2">
+      <rect x="190" y="90" width="150" height="46" rx="4"/>
+      <text x="265" y="110" text-anchor="middle">ConcretePrototype2</text>
+      <text x="265" y="126" text-anchor="middle">clone()</text>
+    </g>
+    <line x1="60" y1="180" x2="95" y2="136" stroke="var(--line)"/>
+    <line x1="300" y1="180" x2="265" y2="136" stroke="var(--line)"/>
+    <g class="node" data-k="client">
+      <rect x="30" y="180" width="300" height="40" rx="4"/>
+      <text x="180" y="198" text-anchor="middle">Client</text>
+      <text x="180" y="213" text-anchor="middle" font-size="9">p = prototype.clone()</text>
+    </g>
+   </svg>
+   <div class="diagram-desc" id="diagram-desc">Click a block to see its role.</div>
+  </div>`},
+
+ {id:"participants", title:"Participants", body:`
+  <p class="dim">Click a role to see its responsibility.</p>
+  <div class="demo-row" id="participantCards"></div>
+  <div class="diagram-desc" id="participantDesc" style="margin-top:12px; max-width:74ch">Pick a role above.</div>`},
+
+ {id:"collaborations", title:"Collaborations", body:`
+  <p>There's exactly one collaboration to remember: a <b>Client asks a Prototype to clone itself</b>, and gets back a new, independent object of the same concrete type. The client never mentions a concrete class name — it only holds a reference typed to the abstract <code>Prototype</code> interface.</p>
+  <div class="analogy"><span class="lbl">CONTRAST</span>Compare with Factory Method, where the client calls a <i>creator</i> object which internally calls <code>new</code>. Here, the object being created <i>is</i> the thing doing the creating.</div>
+  <div class="demo">
+   <b style="font-family:var(--head)">Walk through the sequence</b>
+   <div style="margin-top:10px; display:flex; gap:8px; align-items:center">
+     <button class="ghost" onclick="stepCollab(-1)">← back</button>
+     <span class="meta" id="stepCount" style="font-family:var(--mono); font-size:.78rem; color:var(--ink-dim)"></span>
+     <button class="ghost" onclick="stepCollab(1)">next →</button>
+   </div>
+   <div class="analogy" id="stepText" style="margin-top:12px"></div>
+  </div>`},
+
+ {id:"implementation", title:"Implementation", body:`
+  <p>GoF flags three implementation concerns worth remembering for exams:</p>
+  <ul class="check">
+   <li><b>Prototype Manager / Registry</b> — when the number of prototypes isn't fixed, keep them in a keyed registry (name → prototype) that clients look up and clone from, instead of hard-wiring references.</li>
+   <li><b>Shallow vs. Deep copy</b> — the single most-tested implementation detail. A shallow clone copies field <i>values</i>; any field holding a reference (an array, another object) still points at the <i>same</i> shared data as the original.</li>
+   <li><b>Initializing clones</b> — sometimes a clone needs a bit of fresh state (a new unique ID) rather than a pure copy; this is done inside <code>clone()</code> after copying.</li>
+  </ul>
+  <details class="dive"><summary>🎓 Not sure what "shallow vs deep" means? Click here</summary>
+  <p style="margin-top:0">Imagine photocopying a folder. A <b>shallow</b> copy photocopies the folder's cover — but the papers inside are still the <i>same physical papers</i>, shared with the original folder. Scribble on one, and it shows up in both folders. A <b>deep</b> copy photocopies every page too, so the two folders share nothing.</p></details>
+  <div class="demo">
+   <b style="font-family:var(--head)">Live demo — shallow copy trap</b>
+   <p class="dim" style="margin:6px 0 0">Clone the prototype, then mutate the clone's tag list. Watch what happens to the original.</p>
+   <div class="demo-row" id="demoRow"></div>
+   <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+     <button class="act" onclick="cloneCard(false)">clone() — shallow</button>
+     <button class="act" onclick="cloneCard(true)" style="background:var(--accent2)">clone() — deep</button>
+     <button class="ghost" onclick="resetDemo()">reset</button>
+   </div>
+   <div class="warn" id="demoWarn"></div>
+  </div>`},
+
+ {id:"samplecode", title:"Sample Code", body:`
+  <div class="tabs" id="codeTabs"></div>
+  <div id="codePanes"></div>`},
+
+ {id:"knownuses", title:"Known Uses", body:`
+  <p class="dim">Click a card to flip it.</p>
+  <div class="demo-row" id="usesCards"></div>`},
+
+ {id:"related", title:"Related Patterns", body:`
+  <table><tr><th>Pattern</th><th>Relationship to Prototype</th></tr>
+  <tr><td><b>Abstract Factory</b></td><td>Can be implemented <i>using</i> Prototype: the factory stores one prototype per product and clones instead of calling <code>new</code>.</td></tr>
+  <tr><td><b>Factory Method</b></td><td>Alternative way to solve the same "don't hard-code the class" problem — via subclassing rather than cloning. See comparison below.</td></tr>
+  <tr><td><b>Composite / Decorator</b></td><td>Both often benefit from Prototype to clone deep, recursively-built structures in one call.</td></tr>
+  <tr><td><b>Memento</b></td><td>Sometimes confused with Prototype — Memento captures state to <i>restore</i> an object later; Prototype copies state to produce a <i>new, independent</i> object now.</td></tr></table>
+
+  <p style="margin-top:18px"><b>Prototype vs. Factory Method — the exam-favourite distinction:</b></p>
+  <table><tr><th></th><th>Factory Method</th><th>Prototype</th></tr>
+  <tr><td>Creates new object via</td><td>a <code>new</code> call inside a creator subclass</td><td>copying an existing instance</td></tr>
+  <tr><td>Requires</td><td>a parallel hierarchy of creator subclasses</td><td>each product to implement <code>clone()</code></td></tr>
+  <tr><td>Best when</td><td>class logic differs meaningfully per type</td><td>objects are expensive to build or config-heavy</td></tr>
+  <tr><td>Runtime flexibility</td><td>fixed at compile time per subclass</td><td>fully dynamic — register any object as a prototype</td></tr></table>`}
+];
+
+const icons = {
+  intent: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="4" width="14" height="9" rx="1.5"/><path d="M12 13v5h8v-5M8 22h16l-2 5H10z"/></svg>`, // stamp
+  aka: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 16 12 6h13a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H12z"/><circle cx="11" cy="16" r="1.6" fill="currentColor" stroke="none"/></svg>`, // name tag
+  motivation: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="16" cy="13" r="7"/><path d="M13 24h6M14 27h4M16 6V4"/></svg>`, // lightbulb
+  applicability: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="16" cy="16" r="11"/><path d="M20 12l-5.5 8L12 16"/></svg>`, // compass/check
+  structure: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="9" height="7" rx="1"/><rect x="19" y="5" width="9" height="7" rx="1"/><rect x="11" y="20" width="10" height="7" rx="1"/><path d="M8 12v4h16v-4M16 16v4"/></svg>`, // tree
+  participants: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="10" r="4"/><circle cx="23" cy="10" r="4"/><path d="M3 27c0-5 4-8 6-8s6 3 6 8M17 27c0-5 4-8 6-8s6 3 6 8"/></svg>`, // two heads
+  collaborations: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 12a10 10 0 0 1 17-6M26 20a10 10 0 0 1-17 6"/><path d="M20 3l3 3-3 3M12 29l-3-3 3-3"/></svg>`, // relay loop
+  implementation: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6a5 5 0 0 0-6.9 5.9L4 21v4h4l9-9.1A5 5 0 0 0 26 10z"/></svg>`, // wrench
+  samplecode: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 10 4 16l7 6M21 10l7 6-7 6M18 8l-4 16"/></svg>`, // code brackets
+  knownuses: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="16" cy="16" r="11"/><path d="M5 16h22M16 5c3 3 4 7 4 11s-1 8-4 11c-3-3-4-7-4-11s1-8 4-11z"/></svg>`, // globe
+  related: `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4h5a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-3v3a2 2 0 0 1-2 2h-5v-3a2 2 0 0 0-2-2H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h3V6a2 2 0 0 1 2-2z"/></svg>` // puzzle piece
+};
+const nav = document.getElementById('nav');
+const main = document.getElementById('main');
+sections.forEach((s,i)=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span> ${s.title}<span class="dot" id="dot-${s.id}"></span>`;
+  b.onclick = ()=>show(i);
+  b.id = 'nav-'+s.id;
+  nav.appendChild(b);
+  const d = document.createElement('div');
+  d.className='sheet'; d.id='sheet-'+s.id;
+  d.innerHTML = `<h2><span class="sicon">${icons[s.id]}</span><span class="idx">${String(i+1).padStart(2,'0')}</span>${s.title}</h2>${s.body}`;
+  main.appendChild(d);
+});
+function show(i){
+  sections.forEach((s,j)=>{
+    document.getElementById('nav-'+s.id).classList.toggle('active', i===j);
+    document.getElementById('sheet-'+s.id).classList.toggle('active', i===j);
+  });
+  document.getElementById('dot-'+sections[i].id).classList.add('done');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+show(0);
+
+/* diagram interactivity */
+const diagramInfo = {
+  prototype:"<b>Prototype</b> — declares the clone() interface every concrete prototype must implement. The client only ever talks to this type.",
+  concrete1:"<b>ConcretePrototype1</b> — implements clone(), returning a new instance with its own fields copied in.",
+  concrete2:"<b>ConcretePrototype2</b> — a second concrete family; the client treats it identically to ConcretePrototype1 thanks to the shared interface.",
+  client:"<b>Client</b> — asks a prototype object to clone itself. It never names a concrete class or calls new directly."
+};
+document.querySelectorAll('.node').forEach(n=>{
+  n.addEventListener('click', ()=>{
+    document.querySelectorAll('.node').forEach(m=>m.classList.remove('sel'));
+    n.classList.add('sel');
+    document.getElementById('diagram-desc').innerHTML = diagramInfo[n.dataset.k];
+  });
+});
+
+/* applicability quiz */
+const qs = [
+ "The exact class to instantiate is only known at run time.",
+ "Building a new object means an expensive DB call, file read, or heavy setup.",
+ "You'd otherwise need a factory subclass for every product subclass.",
+ "Objects come in only a handful of pre-set configurations."
+];
+const quiz = document.getElementById('quiz');
+qs.forEach((q,i)=>{
+  const l = document.createElement('label');
+  l.innerHTML = `<input type="checkbox" onchange="checkQuiz()"> ${q}`;
+  quiz.appendChild(l);
+});
+function checkQuiz(){
+  const n = quiz.querySelectorAll('input:checked').length;
+  const v = document.getElementById('verdict');
+  v.style.display='block';
+  if(n>=1){ v.className='verdict good'; v.textContent = `${n}/4 matched — Prototype is a strong fit here.`; }
+  else { v.className='verdict meh'; v.textContent = 'Check any that apply to your design.'; }
+}
+
+/* shallow/deep clone demo */
+let counter = 1;
+let proto = {id:'P0', tags:['red','v1']};
+function renderDemo(){
+  const row = document.getElementById('demoRow');
+  row.innerHTML='';
+  row.appendChild(cardEl(proto,true));
+}
+function cardEl(obj, isOriginal){
+  const el = document.createElement('div');
+  el.className = 'proto-card'+(isOriginal?' original':'');
+  el.innerHTML = `<span class="tag">${isOriginal?'PROTOTYPE':'clone'}</span><div class="id">${obj.id}</div>
+   <ul>${obj.tags.map(t=>`<li>${t}</li>`).join('')}</ul>
+   ${!isOriginal?`<button class="ghost" style="margin-top:8px" onclick="mutate('${obj.id}')">mutate tags</button>`:''}`;
+  return el;
+}
+let clones = [];
+function cloneCard(deep){
+  counter++;
+  const c = {id:'C'+counter, tags: deep ? JSON.parse(JSON.stringify(proto.tags)) : proto.tags};
+  clones.push(c);
+  const row = document.getElementById('demoRow');
+  row.appendChild(cardEl(c,false));
+}
+function mutate(id){
+  const c = clones.find(x=>x.id===id);
+  c.tags.push('mutated!');
+  renderDemo();
+  document.getElementById('demoRow').innerHTML='';
+  document.getElementById('demoRow').appendChild(cardEl(proto,true));
+  clones.forEach(c=>document.getElementById('demoRow').appendChild(cardEl(c,false)));
+  const sharedNow = proto.tags.includes('mutated!');
+  document.getElementById('demoWarn').textContent = sharedNow
+    ? "⚠ shallow clone: the original's tag list changed too — they shared the same array in memory."
+    : "✓ deep clone: original untouched — the clone owns its own copy of the array.";
+}
+function resetDemo(){
+  proto = {id:'P0', tags:['red','v1']};
+  clones = []; counter = 1;
+  document.getElementById('demoWarn').textContent='';
+  renderDemo();
+}
+renderDemo();
+
+/* clone factory playground */
+let pgCount = 0;
+const pgGrid = document.getElementById('pgGrid');
+function critterSVG(hue, id, isMaster){
+  return `<svg viewBox="0 0 46 46" class="critter${isMaster?' master':''}" data-id="${id}" data-hue="${hue}">
+    <circle cx="23" cy="23" r="19" fill="hsl(${hue},70%,55%)" stroke="#0B2340" stroke-width="2"/>
+    <circle cx="17" cy="19" r="3" fill="#0B2340"/><circle cx="29" cy="19" r="3" fill="#0B2340"/>
+    <path d="M15 29 Q23 35 31 29" stroke="#0B2340" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+function pgRender(){
+  pgGrid.innerHTML = critterSVG(24, 'master', true) + pgClones.map(c=>critterSVG(c.hue,c.id,false)).join('');
+  pgGrid.querySelectorAll('.critter:not(.master)').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const c = pgClones.find(x=>x.id===el.dataset.id);
+      c.hue = (c.hue + 90) % 360;
+      pgRender();
+    });
+  });
+  pgGrid.querySelector('.critter.master').addEventListener('click', pgSpawn);
+  document.getElementById('pgScore').textContent = pgCount+' clone'+(pgCount===1?'':'s')+' spawned';
+}
+let pgClones = [];
+function pgSpawn(){
+  pgCount++;
+  pgClones.push({id:'c'+pgCount, hue:(24 + pgCount*37)%360});
+  pgRender();
+}
+function pgReset(){ pgClones=[]; pgCount=0; pgRender(); }
+pgRender();
+
+/* intent toggle */
+const intentSamples = {
+  "Without Prototype": `// caller must know + name the concrete class
+Circle c;
+if (kind == "circle") c = new Circle(10, "red");
+else if (kind == "square") c = new Square(5, "red");
+// new kind added later? this if-chain grows forever`,
+  "With Prototype": `// caller only ever asks the prototype to copy itself
+Shape c = registry.get(kind).clone();
+// new kind added later? register one prototype — done`
+};
+(function(){
+  const t=document.getElementById('intentTabs'), p=document.getElementById('intentPanes');
+  Object.keys(intentSamples).forEach((k,i)=>{
+    const b=document.createElement('button'); b.textContent=k; b.className=i===0?'active':'';
+    b.onclick=()=>{ t.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      p.querySelectorAll('.codepane').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); document.getElementById('ipane-'+k).classList.add('active'); };
+    t.appendChild(b);
+    const d=document.createElement('div'); d.className='codepane'+(i===0?' active':''); d.id='ipane-'+k;
+    d.innerHTML=`<pre><code>${intentSamples[k]}</code></pre>`;
+    p.appendChild(d);
+  });
+})();
+
+/* motivation demo */
+let shapeCount = 2;
+function addShape(withProto){
+  shapeCount++;
+  const out = document.getElementById('shapeOut');
+  out.innerHTML = withProto
+    ? `<code>// 1 change only:\nregistry.register("triplet", new TripletNote());\n// editor code untouched</code>`
+    : `<code>// 3 changes needed:\nclass TripletNote extends Note { ... }\nclass TripletNoteFactory extends NoteFactory { ... }\n// + one more "else if" in the editor's switch statement</code>`;
+}
+function resetShape(){ document.getElementById('shapeOut').innerHTML='<code>// click a button above</code>'; }
+
+/* participant cards */
+const roles = [
+  {k:"Prototype", d:"Declares the interface for cloning itself — e.g. a <code>clone()</code> method. This is the only type the Client ever refers to."},
+  {k:"ConcretePrototype", d:"Implements the clone operation — copies its own fields into a brand-new instance of the same concrete class."},
+  {k:"Client", d:"Creates a new object by asking a prototype to clone itself. Never calls a constructor directly, never names a concrete class."}
+];
+(function(){
+  const wrap=document.getElementById('participantCards');
+  roles.forEach(r=>{
+    const c=document.createElement('div'); c.className='role-card';
+    c.innerHTML=`<b>${r.k}</b>`;
+    c.onclick=()=>{
+      document.querySelectorAll('.role-card').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      document.getElementById('participantDesc').innerHTML = `<b>${r.k}</b><br>${r.d}`;
+    };
+    wrap.appendChild(c);
+  });
+})();
+
+/* collaboration steps */
+const steps = [
+  "Client holds a reference typed only as <b>Prototype</b> — it has no idea which concrete class it really is.",
+  "Client calls <code>prototype.clone()</code>. No constructor, no <code>new</code>, no class name mentioned anywhere.",
+  "The concrete prototype copies its own fields into a fresh instance and hands it back — a new object, same type and starting state as the original."
+];
+let stepIdx = 0;
+function renderStep(){
+  document.getElementById('stepText').innerHTML = steps[stepIdx];
+  document.getElementById('stepCount').textContent = `step ${stepIdx+1} / ${steps.length}`;
+}
+function stepCollab(d){ stepIdx = Math.max(0, Math.min(steps.length-1, stepIdx+d)); renderStep(); }
+renderStep();
+
+/* known uses flip cards */
+const uses = [
+  {k:"Java", front:"Cloneable + Object.clone()", back:"Prototype baked straight into the standard library."},
+  {k:"JavaScript", front:"Object.create(), structuredClone()", back:"The language's own object model is prototype-based."},
+  {k:"Game engines", front:"Spawning bullets / enemies", back:"Clone a pre-configured template instead of rerunning expensive setup per spawn."},
+  {k:"GUI / diagram editors", front:"Copy-paste a shape or node", back:"GoF's original motivating example — duplicates a prototypical instance on the canvas."},
+  {k:"Interviews toolkit", front:"Original GoF reference", back:"An early C++ GUI toolkit documented as a source use of this pattern."}
+];
+(function(){
+  const wrap=document.getElementById('usesCards');
+  uses.forEach(u=>{
+    const c=document.createElement('div'); c.className='flip-card';
+    c.innerHTML=`<div class="flip-inner">
+      <div class="flip-face"><span><b>${u.k}</b><br><span class="dim" style="font-size:.76rem">${u.front}</span></span></div>
+      <div class="flip-face flip-back">${u.back}</div>
+    </div>`;
+    c.onclick=()=>c.classList.toggle('flipped');
+    wrap.appendChild(c);
+  });
+})();
+
+/* code tabs */
+const codeSamples = {
+ Python: `import copy
+
+class Shape:
+    def clone(self):
+        # shallow by default — override where needed
+        return copy.copy(self)
+
+class Circle(Shape):
+    def __init__(self, radius, tags):
+        self.radius = radius
+        self.tags = tags          # a list — reference type!
+
+    def clone(self):
+        new = copy.copy(self)          # shallow
+        new.tags = copy.deepcopy(self.tags)  # fix the shared list
+        return new
+
+# --- client code ---
+master = Circle(radius=10, tags=["draft"])
+registry = {"circle": master}
+
+# no "new Circle(...)" anywhere below:
+c2 = registry["circle"].clone()
+c2.radius = 25
+print(master.radius, c2.radius)   # 10 25 — independent`,
+ JavaScript: `class Shape {
+  clone() {
+    // shallow: copies top-level fields only
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+}
+
+class Circle extends Shape {
+  constructor(radius, tags) {
+    super();
+    this.radius = radius;
+    this.tags = tags;              // reference type!
+  }
+  clone() {
+    const copy = super.clone();
+    copy.tags = structuredClone(this.tags); // true deep copy
+    return copy;
+  }
+}
+
+// --- client code ---
+const master = new Circle(10, ["draft"]);
+const registry = { circle: master };
+
+const c2 = registry.circle.clone(); // no "new Circle(...)" here
+c2.radius = 25;
+console.log(master.radius, c2.radius); // 10 25`
+};
+const tabsEl = document.getElementById('codeTabs');
+const panesEl = document.getElementById('codePanes');
+Object.keys(codeSamples).forEach((lang,i)=>{
+  const b = document.createElement('button');
+  b.textContent = lang; b.className = i===0?'active':'';
+  b.onclick = ()=>{
+    tabsEl.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    panesEl.querySelectorAll('.codepane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('pane-'+lang).classList.add('active');
+  };
+  tabsEl.appendChild(b);
+  const p = document.createElement('div');
+  p.className='codepane'+(i===0?' active':''); p.id='pane-'+lang;
+  p.innerHTML = `<pre><code>${codeSamples[lang].replace(/</g,'&lt;')}</code></pre>`;
+  panesEl.appendChild(p);
+});
+</script>
+</body>
+</html>
